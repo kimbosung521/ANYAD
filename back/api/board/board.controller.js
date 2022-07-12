@@ -4,14 +4,12 @@ exports.newBoard = (req, res) => {
   const param = [req.body.id, req.body.title, req.body.text]
   console.log(param)
   pool((conn) => {
-    //b_id, u_id, b_title, b_text, b_time
     conn.query(
       "insert into tbl_board values(0, ?, ? ,?, now())",
       param,
       (err, doc) => {
         err
-          ? // res.send({ result: false })
-            console.log(err)
+          ? req.send({ result: false, message: err })
           : res.send({ result: true })
       }
     )

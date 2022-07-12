@@ -20,15 +20,17 @@ exports.login = (req, res) => {
   })
 }
 
-exports.register = (req,res) => {
-    const {email , pw, name} = req.body
+exports.register = (req, res) => {
+  const { email, pw, name } = req.body
+  bcrypt.hash(pw, 10, (err, hash) => {
+    if (err) res.send({ result: false, message: err })
     pool((conn) => {
-        const sql = "insert into tbl_user(email, name, pw) values(?,?,?)"
-        const hash = await bcrypt.hash(pw, 10)
-        conn.query(sql, [email, hash, name], (err, result) => {
-            if(err) res.send({result : false, message : err})
-            result && res.send({result : true})
-        })
-        conn.release()
+      const sql = "insert into tbl_user(email, name, pw) values(?,?,?)"
+      conn.query(sql, [email, name, hash], (err, result) => {
+        if (err) res.send({ result: false, message: err })
+        result && res.send({ result: true })
+      })
+      conn.release()
     })
+  })
 }
