@@ -36,8 +36,6 @@ ANYAD : 전체 폴더
     모듈 : axios, react-router-dom ...
 ```
 
-
-
 ##BACK
 
 ```
@@ -58,7 +56,3 @@ ANYAD : 전체 폴더
     모듈 : express, body-parser, cors, mysql, bcryptjs, nodemon
     사용 예정 : express-session(?), cookie-parser(?)...
 ```
-
-
-
-
