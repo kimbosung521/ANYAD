@@ -13,10 +13,9 @@ ANYAD : 전체 폴더
 
 ```
 # 프로젝트 빌드
-경로 : ANYAD
-    - back : cd back && npm start
-    - front-a : cd fronta && npm install && cd .. => npm run starta
-    - front-b : cd frontb && npm install && cd .. => npm run startb
+1. cd back -> npm install -> cd ..
+2. cd front-a(or front-b) -> npm install -> cd. .
+3. npm run starta(or startb)
 ```
 
 ##FRONT
