@@ -1,5 +1,7 @@
 const pool = require("../../config/database"),
-  bcrypt = require("bcryptjs")
+  bcrypt = require("bcryptjs"),
+  nodemailer = require("nodemailer"),
+  emailData = require("../../config/emailData")
 
 exports.login = (req, res) => {
   const { id, pw } = req.body
@@ -27,10 +29,37 @@ exports.register = (req, res) => {
     pool((conn) => {
       const sql = "insert into tbl_user(email, name, pw) values(?,?,?)"
       conn.query(sql, [email, name, hash], (err, result) => {
-        if (err) res.send({ result: false, message: err })
-        result && res.send({ result: true })
+        err
+          ? res.send({ result: false, message: err })
+          : res.send({ result: true })
       })
       conn.release()
     })
+  })
+}
+
+exports.checkEmail = async (req, res) => {
+  const checkCode = String(emailData.number())
+  const transporter = nodemailer.createTransport({
+    service: "Naver",
+    prot: 587,
+    host: "smtp.naver.com",
+    secure: false,
+    requireTLS: true,
+    auth: {
+      user: emailData.user,
+      pass: emailData.pw,
+    },
+  })
+
+  const mailOptions = {
+    from: emailData.user,
+    to: req.body.email,
+    subject: "[ANYAD Sign Up Check Code]",
+    text: `Your Code : ${checkCode}`,
+  }
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) console.log(err)
+    res.send({ code: checkCode })
   })
 }
