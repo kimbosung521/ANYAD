@@ -1,22 +1,30 @@
 const pool = require("../../config/database"),
   bcrypt = require("bcryptjs"),
   nodemailer = require("nodemailer"),
-  emailData = require("../../config/emailData")
+  emailData = require("../../config/emailData"),
+  jwt = require("jsonwebtoken")
 
 exports.login = (req, res) => {
-  const { id, pw } = req.body
+  const param = [req.body.id, req.body.pw],
+    accessToken = jwt.sign({ id: param[0] }, secretKey, { expiresIn: "1h" })
   pool((conn) => {
-    const sql = "select * from tbl_user where id = ?"
-    conn.query(sql, [id], (err, row) => {
-      if (err) res.send({ result: false, message: err })
-      if (row.length > 0) {
-        bcrypt.compare(pw, row[0].pw, (err, result) => {
-          if (err) res.send({ result: false, message: err })
-          result
-            ? res.send({ result: true })
-            : res.send({ result: false, message: "PW ERR" })
-        })
-      }
+    conn.query("select * from tbl_user where u_id=?", param[0], (err, row) => {
+      err && res.send({ result: false })
+      row.length > 0
+        ? bcrypt.compare(param[1], row[0].u_pw, (err, result) => {
+            err && res.send({ result: false })
+            if (result) {
+              res
+                .cookie("x_auth", accessToken, {
+                  maxAge: 1000 * 60 * 60 * 24 * 7,
+                  httpOnly: true,
+                })
+                .send({ result: true, info: [row[0].u_name, row[0].u_id] })
+            } else {
+              res.send({ result: false })
+            }
+          })
+        : res.send({ result: false })
     })
     conn.release()
   })
