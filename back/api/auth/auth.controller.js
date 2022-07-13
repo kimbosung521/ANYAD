@@ -2,7 +2,8 @@ const pool = require("../../config/database"),
   bcrypt = require("bcryptjs"),
   nodemailer = require("nodemailer"),
   emailData = require("../../config/emailData"),
-  jwt = require("jsonwebtoken")
+  jwt = require("jsonwebtoken"),
+  secretKey = "Secret_Key"
 
 exports.login = (req, res) => {
   const param = [req.body.id, req.body.pw],
